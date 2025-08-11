@@ -1,7 +1,9 @@
-📌 Project Overview
+# **📌 Project Overview**
+
 Built a real-time review analytics pipeline using Confluent Cloud (Kafka), Kaggle (Python), and Elastic Cloud (Elasticsearch/Kibana).
 
-Pipeline
+# **Pipeline**
+
 
 Producer (kafka-producer.ipynb): stream Yelp reviews → Confluent Kafka.
 
@@ -11,7 +13,8 @@ Elasticsearch Enrichment: join reviews with businesses index via enrich policy +
 
 Kibana Dashboards: visualize by sentiment, location, category.
 
-🛠 Tech Stack
+# **🛠 Tech Stack**
+
 Confluent Cloud (Kafka)
 
 Kaggle Notebooks (producer/consumer)
@@ -20,7 +23,8 @@ Elastic Cloud (Elasticsearch + Kibana)
 
 Python (ingest, transform, ES API)
 
-🔁 What each notebook/file does
+# **🔁 What each notebook/file does**
+
 kafka-producer.ipynb — reads Yelp JSONL and produces to Kafka topic (e.g., raw_reviews).
 
 kafka-spark.ipynb — consumes from Kafka, runs sentiment, and writes to ES (or back to Kafka as enriched_reviews).
