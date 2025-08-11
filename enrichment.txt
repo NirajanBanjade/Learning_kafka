@@ -1,0 +1,74 @@
+# creates index mapping
+
+PUT /reviewsdb.enriched_reviews_collection
+{
+  "mappings": {
+    "properties": {
+      "date": { "type": "date", "format": "yyyy-MM-dd HH:mm:ss" },
+      "business_id": { "type": "keyword" },
+      "review_id": { "type": "keyword" },
+      "sentiment": { "type": "keyword" },
+      "business": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "keyword" },
+          "city": { "type": "keyword" },
+          "categories": { "type": "text" },
+          "geo_location": { "type": "geo_point" }
+        }
+      },
+      "user_id": { "type": "keyword" },
+      "cool": { "type": "integer" },
+      "stars": { "type": "float" },
+      "text": { "type": "text" },
+      "useful": { "type": "integer" },
+      "funny": { "type": "integer" }
+    }
+  }
+}
+
+#creats enrich policy
+
+PUT /_enrich/policy/business_policy
+{
+  "match": {
+    "indices": "businesses",
+    "match_field": "business_id",
+    "enrich_fields": ["name", "latitude", "longitude", "city", "categories"]
+  }
+}
+#execute business policy
+POST /_enrich/policy/business_policy/_execute
+
+#Create the ingest pipeline
+PUT /_ingest/pipeline/enrich_reviews_pipeline
+{
+  "processors": [
+    {
+      "enrich": {
+        "field": "business_id",
+        "policy_name": "business_policy",
+        "target_field": "business"
+      }
+    },
+    {
+      "script": {
+        "source": "ctx.business.geo_location = ['lat': ctx.business.latitude, 'lon': ctx.business.longitude];"
+      }
+    },
+    {
+      "remove": {
+        "field": ["business.latitude", "business.longitude"]
+      }
+    }
+  ]
+}
+
+#make ingest default pipeline so everydata moves through it.
+
+PUT /reviewsdb.enriched_reviews_collection/_settings
+{
+  "index": {
+    "default_pipeline": "enrich_reviews_pipeline"
+  }
+}
